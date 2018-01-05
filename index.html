@@ -18,7 +18,7 @@
 		#grid table tr td.dead {
 			background: white;
 		}
-		#controls button img {
+		#controls button img, #param img {
 			width: 1em;
 		}
 	</style>
@@ -27,6 +27,26 @@
 <body>
 	<div class="container">
 		<h1>Game of life of John Horton Conway</h1>
+		<div id="param">
+			<form class="form-inline">
+				<div class="form-group">
+					<div class="input-group">
+						<div class="input-group-addon"><img src="glyph/svg/si-glyph-two-arrow-in-left-right.svg" /></div>
+						<input type="text" class="form-control" id="gridSizeX" placeholder="Grid size X">
+						<div class="input-group-addon"><img src="glyph/svg/si-glyph-two-arrow-in-down-up.svg" /></div>
+						<input type="text" class="form-control" id="gridSizeY" placeholder="Grid size Y">
+						<div class="input-group-addon"><img src="glyph/svg/si-glyph-square-delicious.svg" /></div>
+						<select class="form-control" id="gridFillMode">
+							<option>Grid fill mode</option>
+							<option value="empty">Empty</option>
+							<option value="random">Random</option>
+						</select>
+					</div>
+				</div>
+				<button class="btn btn-primary">Save</button>
+			</form>
+
+		</div>
 		<div id="grid"></div>
 		<div id="infos">
 			<div class="btn-group" role="group" aria-label="Game of life controls">
@@ -53,36 +73,54 @@
 		var grid = $('#grid');
 		var sizeX = 25;
 		var sizeY = 25;
-		var fillMode = 'random';
+		//var fillMode = 'random';
+		var fillMode = 'empty';
 		var counter = 0;
+
 		// Construct the HTML table grid
 		constructGrid(sizeX, sizeY);
+
 		// Fill the grid
 		fillGrid(fillMode);
+
 		// Next generation
 		$('#controls #next').on('click', function() {
 			counterIncrement();
 			nextGeneration();
 		});
+
 		// Refresh 
 		$('#controls #refresh').on('click', function() {
 			location.reload();
 		});
 
+		// Update cell when click on it
+		grid.find('td').each(function() {
+			$(this).on('click', function() {
+				if ($(this).attr('class') == 'alive') {
+					killCell($(this));
+				} else {
+					createCell($(this));
+				}
+			});
+		});
+
+		/*
+		 * Create the next generation
+		 */
 		function nextGeneration() {
 			grid.find('td').each(function() {
 				var cell = $(this);
 				var state = cell.attr('class');
-				if(state == 'alive') {
+				if (state == 'alive') {
 					if (isTooIsolated(cell) || isTooSurrounded(cell)) {
 						killCell(cell);
 					}
-				}
-				if (state == 'dead') {
+				} else if (state == 'dead') {
 					if(isBirth(cell)) {
 						createCell(cell);
 					}
-				};
+				}
 			});
 		}
 
@@ -101,24 +139,26 @@
 		}
 
 		/*
-		 * Kill a cell (state alive to dead)
-		 */
-		function killCell(cell) {
-			// TODO
-		}
-
-		/*
 		 * Return true if a cell is birth by reproduction
 		 */
 		function isBirth(cell) {
-			// TODO
+			var trNth = cell.parent.index();
+			var tdNth = cell.index();
+			grid.find('table tr:nth-child("'+trNth+'") td:nth-child("'+ (tdNth+1) +'")');
 		}
 
 		/*
 		 * Create a cell (state dead to alive)
 		 */
 		function createCell(cell) {
-			// TODO
+			cell.removeClass("dead").addClass("alive");
+		}
+
+		/*
+		 * Kill a cell (state alive to dead)
+		 */
+		function killCell(cell) {
+			cell.removeClass("alive").addClass("dead");
 		}
 
 		/*
@@ -139,6 +179,11 @@
 					}
 				}
 				$('#infos #alive-counter span').html(nbCell.toString());
+			}
+			else if (mode == 'empty') {
+				grid.find('table tr td').each(function() {
+					$(this).addClass("dead");
+				});
 			}
 		}
 
