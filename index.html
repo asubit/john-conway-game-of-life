@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+	<title>Game of life</title>
+	<style type="text/css">
+		#grid, #infos {
+			margin: 2em auto;
+		}
+		#grid table tr td {
+			width: 10px;
+			height: 10px;
+		}
+		#grid table tr td.alive {
+			background: black;
+		}
+		#grid table tr td.dead {
+			background: white;
+		}
+		#controls button img {
+			width: 1em;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>Game of life of John Horton Conway</h1>
+		<div id="grid"></div>
+		<div id="infos">
+			<div class="btn-group" role="group" aria-label="Game of life controls">
+				<button type="button" class="btn btn-info" id="generation-counter">Generation counter <span class="badge badge-light">0</span></button>
+				<button type="button" class="btn btn-info" id="alive-counter">Alive cell counter <span class="badge badge-light">0</span></button>
+			</div>
+		</div>
+		<div id="controls">
+			<div class="btn-group" role="group" aria-label="Game of life controls">
+				<button type="button" class="btn btn-secondary" id="refresh"><img src="glyph/svg/si-glyph-arrow-circle-rycycle.svg"> Refresh</button>
+				<button type="button" class="btn btn-secondary" id="next"><img src="glyph/svg/si-glyph-rightwards-arrow-to-bar.svg"> Next</button>
+				<button type="button" class="btn btn-secondary" id="play"><img src="glyph/svg/si-glyph-triangle-right.svg"> Play</button>
+				<button type="button" class="btn btn-secondary" id="fast"><img src="glyph/svg/si-glyph-triangle-double-arrow-right.svg"> Play fast</button>
+				<button type="button" class="btn btn-secondary" id="stop"><img src="glyph/svg/si-glyph-pause.svg"> Break</button>
+			</div>
+		</div>
+	</div>
+	<script
+		src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		// Grid HTML
+		var grid = $('#grid');
+		var sizeX = 25;
+		var sizeY = 25;
+		var fillMode = 'random';
+		var counter = 0;
+		// Construct the HTML table grid
+		constructGrid(sizeX, sizeY);
+		// Fill the grid
+		fillGrid(fillMode);
+		// Next generation
+		$('#controls #next').on('click', function() {
+			counterIncrement();
+			nextGeneration();
+		});
+		// Refresh 
+		$('#controls #refresh').on('click', function() {
+			location.reload();
+		});
+
+		function nextGeneration() {
+			grid.find('td').each(function() {
+				var cell = $(this);
+				var state = cell.attr('class');
+				if(state == 'alive') {
+					if (isTooIsolated(cell) || isTooSurrounded(cell)) {
+						killCell(cell);
+					}
+				}
+				if (state == 'dead') {
+					if(isBirth(cell)) {
+						createCell(cell);
+					}
+				};
+			});
+		}
+
+		/*
+		 * Return true if a cell is too isolate
+		 */
+		function isTooIsolated(cell) {
+			// TODO
+		}
+
+		/*
+		 * Return true if a cell is too surrounded
+		 */
+		function isTooSurrounded(cell) {
+			// TODO
+		}
+
+		/*
+		 * Kill a cell (state alive to dead)
+		 */
+		function killCell(cell) {
+			// TODO
+		}
+
+		/*
+		 * Return true if a cell is birth by reproduction
+		 */
+		function isBirth(cell) {
+			// TODO
+		}
+
+		/*
+		 * Create a cell (state dead to alive)
+		 */
+		function createCell(cell) {
+			// TODO
+		}
+
+		/*
+		 * Fill the grid
+		 */
+		function fillGrid(mode = null) {
+
+			if (mode == 'random') {
+				nbCell = randomInt(1, sizeX*sizeY);
+				for (i = 0; i < nbCell; i++) {
+					var randomTR   = randomInt(1, sizeY);
+					var randomTD   = randomInt(1, sizeX);
+					var randomCell = grid.find('table tr:nth-child('+randomTR+') td:nth-child('+randomTD+')');
+
+					if(randomCell.attr("class") != 'alive') {
+						randomCell.removeClass();
+						randomCell.addClass('alive');
+					}
+				}
+				$('#infos #alive-counter span').html(nbCell.toString());
+			}
+		}
+
+		/*
+		 * Construct the grid
+		 */
+		function constructGrid(sizeX, sizeY) {
+			var htmlGrid = '<table border="1">';
+			for (i = 0; i < sizeY; i++) {
+				htmlGrid += '<tr>';
+				for (j = 0 ; j < sizeX; j++) {
+					htmlGrid += '<td class="dead"></td>';
+				}
+				htmlGrid += '</tr>';
+			}
+			htmlGrid += '</table>';
+			grid.append(htmlGrid);
+		}
+
+		/*
+		 * Generate a random number
+		 */
+		function randomInt(min, max)
+		{
+		    return Math.floor(Math.random()*(max-min+1)+min);
+		}
+
+		/*
+		 * Increment generation counter
+		 */
+		function counterIncrement() {
+			counter++;
+			$('#infos #generation-counter').find('span').html(counter.toString());
+		}
+	</script>
+</body>
+
+</html> 
